@@ -1,7 +1,9 @@
 const jwt = require('jsonwebtoken');
 const Token = require('@models/Token');
+const mongoose = require('mongoose');
 
 const authMiddleware = async (req, res, next) => {
+  console.log('TEsting authMiddleware');
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -19,7 +21,11 @@ const authMiddleware = async (req, res, next) => {
       return res.status(401).json({ success: false, message: 'Token invalide ou expiré.' });
     }
 
-    req.user = decoded;
+    // Ajout de l'id et du username à req.user
+    req.user = {
+      id: decoded.id, // On conserve l'id directement depuis le token
+      email: decoded.email, // On suppose que le username est dans le token
+    };
     req.token = token;
     next();
 
